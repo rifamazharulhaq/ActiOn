@@ -7,4 +7,4 @@ Jadi aku bagi 3 PJ Jobdesk ya
 2. Backend (Javascript) : 
 - Ray 
 - Rifa 
-3. Fullstack, Supervisor, QC : Lian
+3. Fullstack, Supervisor, QC : Lian (Lawak)
