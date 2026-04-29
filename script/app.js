@@ -4,6 +4,7 @@ const inputTim = document.getElementById('team-inputs');
 const tombolBuatBracket = document.getElementById('btn-generate');
 const bracketContainer = document.getElementById('bracket-container');
 const pesanStatus = document.getElementById('status-message');
+const pilihanModeBagan = document.getElementById('bracket-mode');
 
 // Input nama tim
 function buatInputTim(jumlahTim) {
@@ -116,16 +117,15 @@ function susunBracket(daftarTim) {
     return rounds;
 }
 
-// Render bracket ke html
-function tampilkanBracket(daftarBabak) {
-    bracketContainer.innerHTML = '';
+// Render bracket ke html (ini gua ubah dikit penyesuaian buat nampilin lower sama upper nya)
+function tampilkanBracket(daftarBabak, tipeBagan) {
+    const wrapper = document.createElement('div');
+    const jumlahTimAwal = Math.pow(2, daftarBabak.length);
 
     if (daftarBabak.length === 0) {
         bracketContainer.textContent = 'Bracket belum ada/dibuat.';
         return;
     }
-
-    const jumlahTimAwal = Math.pow(2, daftarBabak.length);
 
     // Bersiaplah
     daftarBabak.forEach((pertandinganBabak, indeksBabak) => {
@@ -133,7 +133,12 @@ function tampilkanBracket(daftarBabak) {
         const judulBabak = document.createElement('h3');
         const daftarPertandingan = document.createElement('div');
 
-        judulBabak.textContent = namaBabak(indeksBabak, jumlahTimAwal);
+        if (tipeBagan === 'Upper'){
+            judulBabak.textContent = namaBabak(indeksBabak, jumlahTimAwal);
+        } else {
+            judulBabak.textContent = `Lower Bracket ${indeksBabak + 1}`;
+        }
+        
         daftarPertandingan.setAttribute('data-round', String(indeksBabak + 1));
 
         pertandinganBabak.forEach((pertandingan, indeksPertandingan) => {
@@ -155,6 +160,7 @@ function tampilkanBracket(daftarBabak) {
         sectionBabak.append(judulBabak, daftarPertandingan);
         bracketContainer.appendChild(sectionBabak);
     });
+    return wrapper;
 }
 
 // Dropdown yang pilih jumlah tim
@@ -162,9 +168,10 @@ pilihanJumlahTim.addEventListener('change', function () {
     buatInputTim(parseInt(this.value, 10));
 });
 
-// Generate bracketnya
+// Generate bracketnya (ini juga ada beberapa penyesuaian buat nampilin lower sama upper nya)
 tombolBuatBracket.addEventListener('click', function () {
     const hasil = ambilDaftarTim();
+    const modeBagan = pilihanModeBagan.value;
 
     if (hasil.error) {
         bracketContainer.innerHTML = '';
@@ -172,9 +179,64 @@ tombolBuatBracket.addEventListener('click', function () {
         return;
     }
 
-    const daftarBabak = susunBracket(hasil.teams);
+    const daftarBabakUpper = susunBracket(hasil.teams);
+    bracketContainer.innerHTML = '';
 
-    tampilkanBracket(daftarBabak);
+    const headerUpper = document.createElement('h2');
+    headerUpper.textContent = '🏆 Upper Bracket';
+    bracketContainer.appendChild(headerUpper);
+    bracketContainer.appendChild(tampilkanBracket(daftarBabakUpper, 'Upper'));
+
+    if (modeBagan === 'double') {
+        const jumlahPertandinganAwalUpper = daftarBabakUpper[0].length;
+        const daftarBabakLower = susunLowerBracket(jumlahPertandinganAwalUpper);
+
+        const divider = document.createElement('hr');
+        const headerLower = document.createElement('h2');
+        headerLower.textContent = '🛡️ Lower Bracket';
+
+        bracketContainer.appendChild(divider);
+        bracketContainer.appendChild(headerLower);
+        bracketContainer.appendChild(tampilkanBracket(daftarBabakLower, 'Lower'));
+    }
 });
 
 buatInputTim(parseInt(pilihanJumlahTim.value, 10));
+
+// pokonya ini buat nyusun si lower nya trus dapetnya dari si upper, ya gampang nya yang kalah di upper bakal turun dulu ke lower ini gitu pek
+function susunLowerBracket(jumlahPertandinganAwalUpper) {
+    const rounds = [];
+    let slotSaatIni = [];
+
+    for (let i = 1; i <= jumlahPertandinganAwalUpper; i++) {
+        slotSaatIni.push({ label: `Kalah Upper Match ${i}` });
+    }
+
+    let nomorBabak = 1;
+
+    while (slotSaatIni.length > 1) {
+        const pertandinganBabak = [];
+        const slotBerikutnya = [];
+
+        for (let indeks = 0; indeks < slotSaatIni.length; indeks += 2) {
+            const sisiKiri = slotSaatIni[indeks];
+            const sisiKanan = slotSaatIni[indeks + 1] || null;
+            const nomorPertandingan = pertandinganBabak.length + 1;
+            const labelPemenang = `Pemenang Lower Babak ${nomorBabak} M-${nomorPertandingan}`;
+
+            pertandinganBabak.push({
+                left: sisiKiri.label,
+                right: sisiKanan ? sisiKanan.label : 'BYE',
+                winner: labelPemenang,
+            });
+
+            slotBerikutnya.push({ label: labelPemenang });
+        }
+
+        rounds.push(pertandinganBabak);
+        slotSaatIni = slotBerikutnya;
+        nomorBabak += 1;
+    }
+
+    return rounds;
+}
