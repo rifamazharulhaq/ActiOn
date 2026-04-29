@@ -5,6 +5,7 @@ const tombolBuatBracket = document.getElementById('btn-generate');
 const bracketContainer = document.getElementById('bracket-container');
 const pesanStatus = document.getElementById('status-message');
 const pilihanModeBagan = document.getElementById('bracket-mode');
+const inputJumlahCustom = document.getElementById('custom-team-count');
 
 // Input nama tim
 function buatInputTim(jumlahTim) {
@@ -163,9 +164,42 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
     return wrapper;
 }
 
-// Dropdown yang pilih jumlah tim
+// Dropdown yang pilih jumlah tim (ini ada perubahan biar si user bisa pilih bebas jumlah timnya pek)
 pilihanJumlahTim.addEventListener('change', function () {
-    buatInputTim(parseInt(this.value, 10));
+    if (this.value === 'other') {
+        inputJumlahCustom.style.display = 'inline-block';
+        inputJumlahCustom.focus();
+
+        inputTim.innerHTML = '';
+    } else {
+        inputJumlahCustom.style.display = 'none';
+        inputJumlahCustom.value = '';
+
+        buatInputTim(parseInt(this.value, 10));
+    }
+});
+
+inputJumlahCustom.addEventListener('input', function () {
+    let jumlah = parseInt(this.value, 10);
+
+    if (isNaN(jumlah)) {
+        inputTim.innerHTML = '';
+        return;
+    }
+
+    if (jumlah > 16) {
+        jumlah = 16;
+        this.value = '16';
+        pesanStatus.textContent = 'Maksimum jumlah tim adalah 16.';
+    } else {
+        pesanStatus.textContent = '';
+    }
+
+    if (jumlah >= 2) {
+        buatInputTim(jumlah);
+    } else {
+        inputTim.innerHTML = '';
+    }
 });
 
 // Generate bracketnya (ini juga ada beberapa penyesuaian buat nampilin lower sama upper nya)
