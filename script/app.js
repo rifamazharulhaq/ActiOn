@@ -118,7 +118,7 @@ function susunBracket(daftarTim) {
     return rounds;
 }
 
-// Render bracket ke html (ini gua ubah dikit penyesuaian buat nampilin lower sama upper nya)
+// Render bracket ke html (ini gua ubah dikit penyesuaian buat nampilin lower sama upper nya(tambahan lagi buat nampilin status pertandingan sama buat klik nama tim buat menetapkan si pemenangnya))
 function tampilkanBracket(daftarBabak, tipeBagan) {
     const wrapper = document.createElement('div');
     const jumlahTimAwal = Math.pow(2, daftarBabak.length);
@@ -144,7 +144,14 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
 
         pertandinganBabak.forEach((pertandingan, indeksPertandingan) => {
             const cardPertandingan = document.createElement('article');
+            cardPertandingan.style.border = '1px solid #ccc';
+            cardPertandingan.style.padding = '10px';
+            cardPertandingan.style.marginBottom = '10px';
+            cardPertandingan.style.borderRadius = '8px';
+
             const judulPertandingan = document.createElement('h4');
+            judulPertandingan.style.margin = '0 0 10px 0';
+
             const timKiri = document.createElement('p');
             const timKanan = document.createElement('p');
             const deskripsiBerikutnya = document.createElement('p');
@@ -152,14 +159,79 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
             judulPertandingan.textContent = `Pertandingan ${indeksPertandingan + 1}`;
             timKiri.textContent = pertandingan.left;
             timKanan.textContent = pertandingan.right;
-            deskripsiBerikutnya.textContent = `Berikutnya: ${pertandingan.winner}`;
+            deskripsiBerikutnya.textContent = `Status: Menunggu Pemenang...`;
+            deskripsiBerikutnya.style.fontSize = '0.85em';
 
+            const babakSekarang = indeksBabak + 1;
+            const matchSekarang = indeksPertandingan + 1;
+            
+            timKiri.id = `${tipeBagan}-babak-${babakSekarang}-match-${matchSekarang}-Kiri`;
+            timKanan.id = `${tipeBagan}-babak-${babakSekarang}-match-${matchSekarang}-Kanan`;
+
+            if (tipeBagan === 'Lower') {
+                if (pertandingan.left.includes('Kalah Upper Match')) {
+                    const matchNum = pertandingan.left.split(' ')[3];
+                    timKiri.id = `Lower-slot-${matchNum}`;
+                }
+                if (pertandingan.right.includes('Kalah Upper Match')) {
+                    const matchNum = pertandingan.right.split(' ')[3];
+                    timKanan.id = `Lower-slot-${matchNum}`;
+                }
+            }
+
+            timKiri.style.cursor = 'pointer';
+            timKanan.style.cursor = 'pointer';
+
+            const tetapkanPemenang = (elemenPemenang, elemenKalah) => {
+                const namaPemenang = elemenPemenang.textContent;
+
+                if (namaPemenang === 'BYE' || namaPemenang.includes('Pemenang') || namaPemenang.includes('Kalah')) {
+                    return;
+                }
+
+                elemenPemenang.style.fontWeight = 'bold';
+                elemenPemenang.style.color = '#28a745';
+                elemenPemenang.style.textDecoration = 'none';
+
+                elemenKalah.style.fontWeight = 'normal';
+                elemenKalah.style.color = '#dc3545';
+                elemenKalah.style.textDecoration = 'line-through';
+
+                deskripsiBerikutnya.textContent = `Lolos: ${elemenPemenang.textContent} 🎉`;
+
+                const babakSelanjutnya = babakSekarang + 1;
+                const matchSelanjutnya = Math.floor(indeksPertandingan / 2) + 1;
+                const posisiSelanjutnya = (indeksPertandingan % 2 === 0) ? 'Kiri' : 'Kanan';
+
+                const targetId = `${tipeBagan}-babak-${babakSelanjutnya}-match-${matchSelanjutnya}-${posisiSelanjutnya}`;
+                const slotTujuan = document.getElementById(targetId);
+
+                if (slotTujuan) {
+                    slotTujuan.textContent = namaPemenang;
+                    slotTujuan.style.fontWeight = 'normal';
+                    slotTujuan.style.color = '#000';
+                    slotTujuan.style.textDecoration = 'none';
+                }
+
+                if (tipeBagan === 'Upper' && indeksBabak === 0) {
+                    const slotLower = document.getElementById(`Lower-slot-${matchSekarang}`);
+                    if (slotLower) {
+                        slotLower.textContent = elemenKalah.textContent;
+                        slotLower.style.fontWeight = 'bold';
+                        slotLower.style.color = '#d39e00';
+                        slotLower.style.textDecoration = 'none';
+                    }
+                }
+            };
+
+            timKiri.addEventListener('click', () => tetapkanPemenang(timKiri, timKanan));
+            timKanan.addEventListener('click', () => tetapkanPemenang(timKanan, timKiri));
             cardPertandingan.append(judulPertandingan, timKiri, timKanan, deskripsiBerikutnya);
             daftarPertandingan.appendChild(cardPertandingan);
         });
 
         sectionBabak.append(judulBabak, daftarPertandingan);
-        bracketContainer.appendChild(sectionBabak);
+        wrapper.appendChild(sectionBabak);
     });
     return wrapper;
 }
@@ -179,6 +251,7 @@ pilihanJumlahTim.addEventListener('change', function () {
     }
 });
 
+// ini buat nampilin text box jumlah tim custom yang diinput user pek
 inputJumlahCustom.addEventListener('input', function () {
     let jumlah = parseInt(this.value, 10);
 
