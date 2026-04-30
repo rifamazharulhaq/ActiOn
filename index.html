@@ -1,42 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ActiOn</title>
+    <title>ActiOn - Polos</title>
+    <!-- Library ini tetap butuh ya buat fitur simpan gambar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
+
     <h1>ActiOn - Bracket Competition</h1>
 
     <div id="input-section">
         <h2>Masukkan Nama Tim/Pemain</h2>
+        
         <div>
-            <label for="team-count">Jumlah Tim: </label>
+            <label>Jumlah Tim:</label>
             <select id="team-count">
                 <option value="4">4 Tim</option>
                 <option value="8" selected>8 Tim</option>
                 <option value="16">16 Tim</option>
                 <option value="other">Lainnya...</option>
             </select>
-
-            <input type="number" id="custom-team-count" min="2" max="16" placeholder="Max 16" style="display: none;" />
+            <input type="number" id="custom-team-count" min="2" max="16" placeholder="Max 16" style="display: none;">
         </div>
+
         <div>
-            <label for="bracket-mode">Mode Bagan: </label>
+            <label>Mode Bagan:</label>
             <select id="bracket-mode">
                 <option value="single" selected>Mode Cup (Single)</option>
                 <option value="double">Mode Upper/Lower (Double)</option>
             </select>
         </div>
-        <div id="team-inputs"></div>
+
+        <div id="team-inputs">
+            <!-- Input nama tim muncul di sini -->
+        </div>
+
         <p id="status-message"></p>
         <button id="btn-generate">Generate Bracket</button>
     </div>
 
+    <hr>
+
     <div id="bracket-section">
         <h2>Hasil Bracket</h2>
-        <div id="bracket-container"></div>
+        <!-- Tombol Export muncul kalau bracket sudah dibuat -->
+        <button id="btn-export" style="display: none;">Export ke Gambar (PNG)</button>
+        
+        <div id="bracket-container">
+            <!-- Hasil bagan muncul di sini -->
+        </div>
     </div>
+
+    <!-- Struktur Pop-Up Score (Modal) -->
+    <!-- Display none agar tidak muncul sebelum diklik kartu pertandingannya -->
+    <div id="score-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+        <div style="background:white; margin: 15% auto; padding: 20px; width: 300px; text-align: center;">
+            <h3>Input Skor</h3>
+            
+            <div>
+                <span id="modal-team-left"></span>
+                <input type="number" id="score-left" value="0">
+            </div>
+            
+            <p>VS</p>
+            
+            <div>
+                <span id="modal-team-right"></span>
+                <input type="number" id="score-right" value="0">
+            </div>
+
+            <br>
+            <button id="btn-save-score">Simpan</button>
+            <button id="btn-close-modal">Batal</button>
+        </div>
+    </div>
+
     <script src="script/app.js"></script>
 </body>
 </html>
