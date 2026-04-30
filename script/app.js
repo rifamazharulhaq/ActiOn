@@ -9,24 +9,20 @@ const inputJumlahCustom = document.getElementById('custom-team-count');
 let modeDoubleBracket = false;
 let grandPemenangUpper = null;
 let grandPemenangLower = null;
-
-// --- TAMBAHAN FITUR EXPORT GAMBAR ---
 const tombolExport = document.createElement('button');
 tombolExport.textContent = 'Export Gambar Bracket';
 tombolExport.id = 'btn-export';
-tombolExport.style.display = 'none'; // Disembunyikan sampai bracket dibuat
+tombolExport.style.display = 'none';
 tombolExport.style.marginTop = '20px';
-// Sisipkan tombol export di bawah container bracket
+
 bracketContainer.insertAdjacentElement('afterend', tombolExport);
 
 tombolExport.addEventListener('click', () => {
-    // Memeriksa apakah library html2canvas sudah dipasang
     if (typeof html2canvas === 'undefined') {
         alert('Harap tambahkan tag script library html2canvas di HTML Anda:\n<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>');
         return;
     }
     
-    // Proses membuat elemen html menjadi gambar
     html2canvas(bracketContainer).then(canvas => {
         const linkGambar = document.createElement('a');
         linkGambar.download = 'bracket-turnamen.png';
@@ -37,14 +33,13 @@ tombolExport.addEventListener('click', () => {
         alert('Terjadi kesalahan saat mencoba export gambar bracket.');
     });
 });
-// --- AKHIR TAMBAHAN FITUR EXPORT GAMBAR ---
 
 // Input nama tim
 function buatInputTim(jumlahTim) {
     inputTim.innerHTML = '';
     bracketContainer.innerHTML = '';
     pesanStatus.textContent = '';
-    tombolExport.style.display = 'none'; // Sembunyikan tombol export jika reset
+    tombolExport.style.display = 'none';
 
     for (let nomorTim = 1; nomorTim <= jumlahTim; nomorTim++) {
         const kolomNama = document.createElement('input');
@@ -230,22 +225,17 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
                     return;
                 }
 
-                // --- TAMBAHAN FITUR POP UP SCORE ---
-                // Bersihkan nama tim dari text skor sebelumnya supaya tidak tumpang tindih
                 const namaPemenangAsli = namaPemenang.split(" (Skor:")[0];
                 const namaKalahAsli = namaKalah.split(" (Skor:")[0];
 
-                // Memunculkan Pop Up untuk mengisi Score
                 const skorPemenang = prompt(`Masukkan skor untuk pemenang (${namaPemenangAsli}):`, "");
-                if (skorPemenang === null) return; // Dibatalkan jika user klik Cancel
+                if (skorPemenang === null) return;
 
                 const skorKalah = prompt(`Masukkan skor untuk tim yang kalah (${namaKalahAsli}):`, "");
-                if (skorKalah === null) return; // Dibatalkan jika user klik Cancel
+                if (skorKalah === null) return;
 
-                // Menambahkan skor ke teks UI
                 elemenPemenang.textContent = `${namaPemenangAsli} (Skor: ${skorPemenang})`;
                 elemenKalah.textContent = `${namaKalahAsli} (Skor: ${skorKalah})`;
-                // --- AKHIR TAMBAHAN FITUR POP UP SCORE ---
 
                 elemenPemenang.style.fontWeight = 'bold';
                 elemenPemenang.style.color = '#28a745';
@@ -265,8 +255,7 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
                 const slotTujuan = document.getElementById(targetId);
 
                 if (slotTujuan) {
-                    slotTujuan.textContent = namaPemenangAsli; // Parsing nama asli supaya skor tidak masuk ke babak selanjutnya
-                    slotTujuan.style.fontWeight = 'normal';
+                    slotTujuan.textContent = namaPemenangAsli;
                     slotTujuan.style.color = '#000';
                     slotTujuan.style.textDecoration = 'none';
                 } else {
@@ -289,8 +278,7 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
                     const slotLowerAltId = `Lower-slot-babak-${babakSekarang}-pert-${matchSekarang}-Kanan`;
                     const slotLower = document.getElementById(slotLowerId) || document.getElementById(slotLowerAltId);
                     if (slotLower) {
-                        slotLower.textContent = namaKalahAsli; // Parsing nama tim murni ke slot Lower tanpa bawaan skornya
-                        slotLower.style.fontWeight = 'bold';
+                        slotLower.textContent = namaKalahAsli;
                         slotLower.style.color = '#d39e00';
                         slotLower.style.textDecoration = 'none';
                     }
@@ -356,8 +344,7 @@ tombolBuatBracket.addEventListener('click', function () {
     if (hasil.error) {
         bracketContainer.innerHTML = '';
         pesanStatus.textContent = hasil.error;
-        tombolExport.style.display = 'none'; // Sembunyikan jika error
-        return;
+        tombolExport.style.display = 'none';
     }
 
     const daftarBabakUpper = susunBracket(hasil.teams);
@@ -410,7 +397,6 @@ tombolBuatBracket.addEventListener('click', function () {
         const setChampion = (winnerEl, loserEl) => {
             if (winnerEl.textContent === '---' || winnerEl.textContent === '') return;
             
-            // --- TAMBAHAN FITUR POP UP SCORE (GRAND FINAL) ---
             const namaMenangAsli = winnerEl.textContent.split(" (Skor:")[0];
             const namaKalahAsli = loserEl.textContent.split(" (Skor:")[0];
 
@@ -422,7 +408,6 @@ tombolBuatBracket.addEventListener('click', function () {
 
             winnerEl.textContent = `${namaMenangAsli} (Skor: ${skorMenang})`;
             loserEl.textContent = `${namaKalahAsli} (Skor: ${skorKalah})`;
-            // --- AKHIR TAMBAHAN FITUR POP UP SCORE (GRAND FINAL) ---
 
             winnerEl.style.fontWeight = 'bold';
             winnerEl.style.color = '#28a745';
@@ -440,7 +425,6 @@ tombolBuatBracket.addEventListener('click', function () {
         bracketContainer.appendChild(grandWrap);
     }
 
-    // Tampilkan tombol export sesudah sukses generate bracket
     tombolExport.style.display = 'inline-block';
 });
 
