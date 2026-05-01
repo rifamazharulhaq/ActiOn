@@ -6,12 +6,40 @@ const bracketContainer = document.getElementById('bracket-container');
 const pesanStatus = document.getElementById('status-message');
 const pilihanModeBagan = document.getElementById('bracket-mode');
 const inputJumlahCustom = document.getElementById('custom-team-count');
+let modeDoubleBracket = false;
+let grandPemenangUpper = null;
+let grandPemenangLower = null;
+const tombolExport = document.createElement('button');
+tombolExport.textContent = 'Export Gambar Bracket';
+tombolExport.id = 'btn-export';
+tombolExport.style.display = 'none';
+tombolExport.style.marginTop = '20px';
+
+bracketContainer.insertAdjacentElement('afterend', tombolExport);
+
+tombolExport.addEventListener('click', () => {
+    if (typeof html2canvas === 'undefined') {
+        alert('Harap tambahkan tag script library html2canvas di HTML Anda:\n<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>');
+        return;
+    }
+    
+    html2canvas(bracketContainer).then(canvas => {
+        const linkGambar = document.createElement('a');
+        linkGambar.download = 'bracket-turnamen.png';
+        linkGambar.href = canvas.toDataURL('image/png');
+        linkGambar.click();
+    }).catch(error => {
+        console.error('Gagal export gambar:', error);
+        alert('Terjadi kesalahan saat mencoba export gambar bracket.');
+    });
+});
 
 // Input nama tim
 function buatInputTim(jumlahTim) {
     inputTim.innerHTML = '';
     bracketContainer.innerHTML = '';
     pesanStatus.textContent = '';
+    tombolExport.style.display = 'none';
 
     for (let nomorTim = 1; nomorTim <= jumlahTim; nomorTim++) {
         const kolomNama = document.createElement('input');
@@ -118,10 +146,15 @@ function susunBracket(daftarTim) {
     return rounds;
 }
 
-// Render bracket ke html (ini gua ubah dikit penyesuaian buat nampilin lower sama upper nya(tambahan lagi buat nampilin status pertandingan sama buat klik nama tim buat menetapkan si pemenangnya))
+// Render bracket ke html (ini gua ubah dikit penyesuaian buat nampilin lower sama upper nya(tambahan lagi buat nampilin status pertandingan sama buat klik nama tim buat menetapkan si pemenangnya)(Beberapa gua ubah lagi buat nampilin nama tim yang kalah di upper terus masuk ke lower))
 function tampilkanBracket(daftarBabak, tipeBagan) {
     const wrapper = document.createElement('div');
     const jumlahTimAwal = Math.pow(2, daftarBabak.length);
+    
+    let jumlahTimAwalLower = jumlahTimAwal;
+    if (tipeBagan === 'Lower' && daftarBabak.length > 0) {
+        jumlahTimAwalLower = daftarBabak[0].length * 2;
+    }
 
     if (daftarBabak.length === 0) {
         bracketContainer.textContent = 'Bracket belum ada/dibuat.';
@@ -134,10 +167,14 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
         const judulBabak = document.createElement('h3');
         const daftarPertandingan = document.createElement('div');
 
-        if (tipeBagan === 'Upper'){
-            judulBabak.textContent = namaBabak(indeksBabak, jumlahTimAwal);
+        if (modeDoubleBracket) {
+            judulBabak.textContent = `${tipeBagan} Bracket ${indeksBabak + 1}`;
         } else {
-            judulBabak.textContent = `Lower Bracket ${indeksBabak + 1}`;
+            if (tipeBagan === 'Upper'){
+                judulBabak.textContent = namaBabak(indeksBabak, jumlahTimAwal);
+            } else {
+                judulBabak.textContent = namaBabak(indeksBabak, jumlahTimAwalLower);
+            }
         }
         
         daftarPertandingan.setAttribute('data-round', String(indeksBabak + 1));
@@ -169,13 +206,11 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
             timKanan.id = `${tipeBagan}-babak-${babakSekarang}-match-${matchSekarang}-Kanan`;
 
             if (tipeBagan === 'Lower') {
-                if (pertandingan.left.includes('Kalah Upper Match')) {
-                    const matchNum = pertandingan.left.split(' ')[3];
-                    timKiri.id = `Lower-slot-${matchNum}`;
+                if (pertandingan.leftOrigin) {
+                    timKiri.id = `${tipeBagan}-slot-babak-${pertandingan.leftOrigin.babak}-pert-${pertandingan.leftOrigin.pertandingan}-Kiri`;
                 }
-                if (pertandingan.right.includes('Kalah Upper Match')) {
-                    const matchNum = pertandingan.right.split(' ')[3];
-                    timKanan.id = `Lower-slot-${matchNum}`;
+                if (pertandingan.rightOrigin) {
+                    timKanan.id = `${tipeBagan}-slot-babak-${pertandingan.rightOrigin.babak}-pert-${pertandingan.rightOrigin.pertandingan}-Kanan`;
                 }
             }
 
@@ -184,10 +219,23 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
 
             const tetapkanPemenang = (elemenPemenang, elemenKalah) => {
                 const namaPemenang = elemenPemenang.textContent;
+                const namaKalah = elemenKalah.textContent;
 
                 if (namaPemenang === 'BYE' || namaPemenang.includes('Pemenang') || namaPemenang.includes('Kalah')) {
                     return;
                 }
+
+                const namaPemenangAsli = namaPemenang.split(" (Skor:")[0];
+                const namaKalahAsli = namaKalah.split(" (Skor:")[0];
+
+                const skorPemenang = prompt(`Masukkan skor untuk pemenang (${namaPemenangAsli}):`, "");
+                if (skorPemenang === null) return;
+
+                const skorKalah = prompt(`Masukkan skor untuk tim yang kalah (${namaKalahAsli}):`, "");
+                if (skorKalah === null) return;
+
+                elemenPemenang.textContent = `${namaPemenangAsli} (Skor: ${skorPemenang})`;
+                elemenKalah.textContent = `${namaKalahAsli} (Skor: ${skorKalah})`;
 
                 elemenPemenang.style.fontWeight = 'bold';
                 elemenPemenang.style.color = '#28a745';
@@ -197,7 +245,7 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
                 elemenKalah.style.color = '#dc3545';
                 elemenKalah.style.textDecoration = 'line-through';
 
-                deskripsiBerikutnya.textContent = `Lolos: ${elemenPemenang.textContent} 🎉`;
+                deskripsiBerikutnya.textContent = `Lolos: ${namaPemenangAsli}`;
 
                 const babakSelanjutnya = babakSekarang + 1;
                 const matchSelanjutnya = Math.floor(indeksPertandingan / 2) + 1;
@@ -207,17 +255,30 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
                 const slotTujuan = document.getElementById(targetId);
 
                 if (slotTujuan) {
-                    slotTujuan.textContent = namaPemenang;
-                    slotTujuan.style.fontWeight = 'normal';
+                    slotTujuan.textContent = namaPemenangAsli;
                     slotTujuan.style.color = '#000';
                     slotTujuan.style.textDecoration = 'none';
+                } else {
+                    if (modeDoubleBracket) {
+                        if (tipeBagan === 'Upper' && grandPemenangUpper) {
+                            grandPemenangUpper.textContent = namaPemenangAsli;
+                            grandPemenangUpper.style.fontWeight = 'normal';
+                            grandPemenangUpper.style.color = '#000';
+                        }
+                        if (tipeBagan === 'Lower' && grandPemenangLower) {
+                            grandPemenangLower.textContent = namaPemenangAsli;
+                            grandPemenangLower.style.fontWeight = 'normal';
+                            grandPemenangLower.style.color = '#000';
+                        }
+                    }
                 }
 
-                if (tipeBagan === 'Upper' && indeksBabak === 0) {
-                    const slotLower = document.getElementById(`Lower-slot-${matchSekarang}`);
+                if (tipeBagan === 'Upper') {
+                    const slotLowerId = `Lower-slot-babak-${babakSekarang}-pert-${matchSekarang}-Kiri`;
+                    const slotLowerAltId = `Lower-slot-babak-${babakSekarang}-pert-${matchSekarang}-Kanan`;
+                    const slotLower = document.getElementById(slotLowerId) || document.getElementById(slotLowerAltId);
                     if (slotLower) {
-                        slotLower.textContent = elemenKalah.textContent;
-                        slotLower.style.fontWeight = 'bold';
+                        slotLower.textContent = namaKalahAsli;
                         slotLower.style.color = '#d39e00';
                         slotLower.style.textDecoration = 'none';
                     }
@@ -236,7 +297,7 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
     return wrapper;
 }
 
-// Dropdown yang pilih jumlah tim (ini ada perubahan biar si user bisa pilih bebas jumlah timnya pek)
+// Dropdown yang pilih jumlah tim (ini ada perubahan biar si user bisa pilih bebas jumlah timnya pek(pak pek pak pek))
 pilihanJumlahTim.addEventListener('change', function () {
     if (this.value === 'other') {
         inputJumlahCustom.style.display = 'inline-block';
@@ -283,45 +344,106 @@ tombolBuatBracket.addEventListener('click', function () {
     if (hasil.error) {
         bracketContainer.innerHTML = '';
         pesanStatus.textContent = hasil.error;
-        return;
+        tombolExport.style.display = 'none';
     }
 
     const daftarBabakUpper = susunBracket(hasil.teams);
     bracketContainer.innerHTML = '';
 
+    modeDoubleBracket = modeBagan === 'double';
+    grandPemenangUpper = null;
+    grandPemenangLower = null;
+
     const headerUpper = document.createElement('h2');
-    headerUpper.textContent = '🏆 Upper Bracket';
+    headerUpper.textContent = 'Upper Bracket';
     bracketContainer.appendChild(headerUpper);
     bracketContainer.appendChild(tampilkanBracket(daftarBabakUpper, 'Upper'));
 
     if (modeBagan === 'double') {
-        const jumlahPertandinganAwalUpper = daftarBabakUpper[0].length;
-        const daftarBabakLower = susunLowerBracket(jumlahPertandinganAwalUpper);
+        const daftarBabakLower = susunLowerBracket(daftarBabakUpper);
 
         const divider = document.createElement('hr');
         const headerLower = document.createElement('h2');
-        headerLower.textContent = '🛡️ Lower Bracket';
+        headerLower.textContent = 'Lower Bracket';
 
         bracketContainer.appendChild(divider);
         bracketContainer.appendChild(headerLower);
         bracketContainer.appendChild(tampilkanBracket(daftarBabakLower, 'Lower'));
+
+        const divider2 = document.createElement('hr');
+        const headerGrand = document.createElement('h2');
+        headerGrand.textContent = 'Grand Final';
+        const grandWrap = document.createElement('div');
+
+        const upLabel = document.createElement('p');
+        upLabel.textContent = 'Upper Winner';
+        const lowLabel = document.createElement('p');
+        lowLabel.textContent = 'Lower Winner';
+
+        grandPemenangUpper = document.createElement('p');
+        grandPemenangUpper.id = 'Grand-Upper';
+        grandPemenangUpper.textContent = '---';
+        grandPemenangUpper.style.cursor = 'pointer';
+
+        grandPemenangLower = document.createElement('p');
+        grandPemenangLower.id = 'Grand-Lower';
+        grandPemenangLower.textContent = '---';
+        grandPemenangLower.style.cursor = 'pointer';
+
+        const grandStatus = document.createElement('p');
+        grandStatus.id = 'Grand-Status';
+        grandStatus.textContent = 'Menunggu kedua sisi...';
+
+        const setChampion = (winnerEl, loserEl) => {
+            if (winnerEl.textContent === '---' || winnerEl.textContent === '') return;
+            
+            const namaMenangAsli = winnerEl.textContent.split(" (Skor:")[0];
+            const namaKalahAsli = loserEl.textContent.split(" (Skor:")[0];
+
+            const skorMenang = prompt(`Masukkan skor untuk Champion (${namaMenangAsli}):`, "");
+            if (skorMenang === null) return; 
+
+            const skorKalah = prompt(`Masukkan skor untuk Runner-up (${namaKalahAsli}):`, "");
+            if (skorKalah === null) return; 
+
+            winnerEl.textContent = `${namaMenangAsli} (Skor: ${skorMenang})`;
+            loserEl.textContent = `${namaKalahAsli} (Skor: ${skorKalah})`;
+
+            winnerEl.style.fontWeight = 'bold';
+            winnerEl.style.color = '#28a745';
+            loserEl.style.fontWeight = 'normal';
+            loserEl.style.color = '#dc3545';
+            grandStatus.textContent = `Champion: ${namaMenangAsli}`;
+        };
+
+        grandPemenangUpper.addEventListener('click', () => setChampion(grandPemenangUpper, grandPemenangLower));
+        grandPemenangLower.addEventListener('click', () => setChampion(grandPemenangLower, grandPemenangUpper));
+
+        grandWrap.append(upLabel, grandPemenangUpper, lowLabel, grandPemenangLower, grandStatus);
+        bracketContainer.appendChild(divider2);
+        bracketContainer.appendChild(headerGrand);
+        bracketContainer.appendChild(grandWrap);
     }
+
+    tombolExport.style.display = 'inline-block';
 });
 
 buatInputTim(parseInt(pilihanJumlahTim.value, 10));
 
-// pokonya ini buat nyusun si lower nya trus dapetnya dari si upper, ya gampang nya yang kalah di upper bakal turun dulu ke lower ini gitu pek
-function susunLowerBracket(jumlahPertandinganAwalUpper) {
-    const rounds = [];
-    let slotSaatIni = [];
+// pokonya ini buat nyusun si lower nya trus dapetnya dari si upper, ya gampang nya yang kalah di upper bakal turun dulu ke lower ini gitu pek (Ini juga ada yang gua ubah sama tambahan buat nampilin nama tim yang kalah di upper terus masuk ke lower, jadi bukan cuma slot kosong doang yang turun ke lower, tapi nama timnya juga langsung turun ke lower)
+function susunLowerBracket(babakUpper) {
+    const babak = [];
 
-    for (let i = 1; i <= jumlahPertandinganAwalUpper; i++) {
-        slotSaatIni.push({ label: `Kalah Upper Match ${i}` });
+    let slotSaatIni = [];
+    const jumlahAwal = babakUpper[0].length;
+    for (let i = 1; i <= jumlahAwal; i++) {
+        slotSaatIni.push({ label: `Kalah Upper Babak 1 Pertandingan ${i}`, origin: { babak: 1, pertandingan: i } });
     }
 
     let nomorBabak = 1;
+    for (let tahap = 0; ; tahap++) {
+        if (slotSaatIni.length === 0) break;
 
-    while (slotSaatIni.length > 1) {
         const pertandinganBabak = [];
         const slotBerikutnya = [];
 
@@ -329,21 +451,34 @@ function susunLowerBracket(jumlahPertandinganAwalUpper) {
             const sisiKiri = slotSaatIni[indeks];
             const sisiKanan = slotSaatIni[indeks + 1] || null;
             const nomorPertandingan = pertandinganBabak.length + 1;
-            const labelPemenang = `Pemenang Lower Babak ${nomorBabak} M-${nomorPertandingan}`;
+            const labelPemenang = `Pemenang Lower Babak ${nomorBabak} Pertandingan ${nomorPertandingan}`;
 
             pertandinganBabak.push({
                 left: sisiKiri.label,
+                leftOrigin: sisiKiri.origin,
                 right: sisiKanan ? sisiKanan.label : 'BYE',
+                rightOrigin: sisiKanan ? sisiKanan.origin : undefined,
                 winner: labelPemenang,
             });
 
             slotBerikutnya.push({ label: labelPemenang });
         }
 
-        rounds.push(pertandinganBabak);
+        babak.push(pertandinganBabak);
+
+        const indexUpperBerikut = tahap + 1;
+        if (indexUpperBerikut < babakUpper.length) {
+            const jumlahLoser = babakUpper[indexUpperBerikut].length;
+            for (let j = 1; j <= jumlahLoser; j++) {
+                slotBerikutnya.push({ label: `Kalah Upper Babak ${indexUpperBerikut + 1} Pertandingan ${j}`, origin: { babak: indexUpperBerikut + 1, pertandingan: j } });
+            }
+        }
+
         slotSaatIni = slotBerikutnya;
         nomorBabak += 1;
+
+        if (slotSaatIni.length === 1 && indexUpperBerikut >= babakUpper.length) break;
     }
 
-    return rounds;
+    return babak;
 }
