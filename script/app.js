@@ -431,7 +431,7 @@ tombolBuatBracket.addEventListener('click', () => {
     bracketContainer.appendChild(lblGrand);
 
     const grandCard = document.createElement('div');
-    grandCard.className = 'border border-red-dim rounded-md p-5 max-w-[380px] relative overflow-hidden bg-gradient-to-br from-[#1a0808] via-[#1a1208] to-bg';
+    grandCard.className = 'border border-red-dim rounded-md p-5 max-w-[380px] relative bg-gradient-to-br from-[#1a0808] via-[#1a1208] to-bg';
     grandCard.innerHTML = `<div class="absolute -top-1.5 right-4 font-head text-[.65rem] font-black tracking-[.3em] text-red bg-bg px-2">GRAND FINAL</div>`;
 
     const upperSlot = document.createElement('div');
