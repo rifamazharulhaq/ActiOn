@@ -275,7 +275,6 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
           kEl.className = `${CLS_SLOT_BASE} ${CLS_SLOT_LOSE}`;
           kEl.querySelector('.score-badge').className = `${CLS_BADGE_BASE} ${CLS_BADGE_LOSE}`;
 
-          statusEl.textContent = `Lolos: ${pemenang}`;
           statusEl.classList.replace('text-[#3a3a3a]', 'text-win');
           cardAccent.classList.replace('bg-border', 'bg-win');
 
@@ -289,14 +288,19 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
             slotTujuan.dataset.name = pemenang;
             slotTujuan.querySelector('.slot-name').textContent = pemenang;
             slotTujuan.className = `${CLS_SLOT_BASE} ${CLS_SLOT_NORMAL}`;
-          } else if (modeDoubleBracket) {
-            if (tipeBagan === 'Upper' && grandPemenangUpper) {
-              grandPemenangUpper.dataset.name = pemenang;
-              grandPemenangUpper.querySelector('.grand-slot-name').textContent = pemenang;
-            }
-            if (tipeBagan === 'Lower' && grandPemenangLower) {
-              grandPemenangLower.dataset.name = pemenang;
-              grandPemenangLower.querySelector('.grand-slot-name').textContent = pemenang;
+            statusEl.textContent = `Lolos: ${pemenang}`;
+          } else {
+            const isSingleModeFinal = !modeDoubleBracket && tipeBagan === 'Upper';
+            statusEl.textContent = isSingleModeFinal ? `Champion: ${pemenang}` : `Lolos: ${pemenang}`;
+            if (modeDoubleBracket) {
+              if (tipeBagan === 'Upper' && grandPemenangUpper) {
+                grandPemenangUpper.dataset.name = pemenang;
+                grandPemenangUpper.querySelector('.grand-slot-name').textContent = pemenang;
+              }
+              if (tipeBagan === 'Lower' && grandPemenangLower) {
+                grandPemenangLower.dataset.name = pemenang;
+                grandPemenangLower.querySelector('.grand-slot-name').textContent = pemenang;
+              }
             }
           }
 
@@ -312,7 +316,9 @@ function tampilkanBracket(daftarBabak, tipeBagan) {
             }
           }
 
-          showToast(`🏆 ${pemenang} melaju ke babak berikutnya!`, 'win');
+          const isSingleModeFinal = !slotTujuan && !modeDoubleBracket && tipeBagan === 'Upper';
+          const toastMsg = isSingleModeFinal ? `👑 ${pemenang} adalah CHAMPION!` : `🏆 ${pemenang} melaju ke babak berikutnya!`;
+          showToast(toastMsg, 'win');
         });
       };
 
