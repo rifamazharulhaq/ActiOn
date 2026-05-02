@@ -1,168 +1,266 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ActiOn – Bracket Competition</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="./src/output.css">
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="icon" href="./src/assets/img/Action Logo Icon.png">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-bg text-white font-body min-h-screen overflow-x-hidden scroll-smooth relative">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ActiOn – Bracket Competition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="./src/output.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="icon" href="./src/assets/img/Action Logo Icon.png" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  </head>
+  <body class="bg-bg text-white font-body min-h-screen overflow-x-hidden scroll-smooth relative">
+    <!-- Background Noise & Grid -->
+    <div class="fixed inset-0 z-0 pointer-events-none opacity-[0.04] bg-noise"></div>
+    <div class="fixed inset-0 z-0 pointer-events-none bg-grid"></div>
 
-  <!-- Background Noise & Grid -->
-  <div class="fixed inset-0 z-0 pointer-events-none opacity-[0.04]" style="background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E&quot;);"></div>
-  <div class="fixed inset-0 z-0 pointer-events-none" style="background-image: linear-gradient(rgba(230,57,70,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(230,57,70,.04) 1px, transparent 1px); background-size: 40px 40px;"></div>
+    <div id="app" class="relative z-10 max-w-[1400px] mx-auto px-5 pt-6 pb-20">
+      <!-- HEADER -->
+      <header class="flex items-center justify-between px-7 py-4 bg-gradient-to-br from-[#141414] to-[#1a0a0a] border border-border border-b-red-dim rounded-md mb-7 relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red to-transparent"></div>
 
-  <div id="app" class="relative z-10 max-w-[1400px] mx-auto px-5 pt-6 pb-20">
-
-    <!-- HEADER -->
-    <header class="flex items-center justify-between px-7 py-4 bg-gradient-to-br from-[#141414] to-[#1a0a0a] border border-border border-b-red-dim rounded-md mb-7 relative overflow-hidden">
-      <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red to-transparent"></div>
-      
-      <div>
-        <div class="font-head text-[2.2rem] font-black tracking-[.08em] text-white uppercase"><img src="./src/assets/img/final logo action text kanan.png" alt="ActiOn Logo" class="w-56 h-auto"></div>
-        <br>
-        <div class="font-ui text-[.7rem] tracking-[.3em] text-muted uppercase -mt-1">Bracket Competition System</div>
-      </div>
-      <div class="font-head text-xs font-bold tracking-[.15em] text-red border border-red-dim py-1 px-3 rounded-sm uppercase bg-red/5">
-        ⚡ Tournament Organizer
-      </div>
-    </header>
-
-    <!-- BENTO GRID -->
-    <div class="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-4 items-start">
-
-      <!-- LEFT: SETUP PANEL -->
-      <div>
-        <div class="bg-card border border-border rounded-md overflow-hidden">
-          <div class="flex items-center gap-2.5 px-5 py-3.5 bg-surface border-b border-border">
-            <div class="w-[3px] h-[18px] bg-red rounded-sm shrink-0"></div>
-            <span class="font-head text-base font-bold tracking-[.12em] uppercase text-white">Setup Tournament</span>
+        <div>
+          <div class="font-head text-[2.2rem] font-black tracking-[.08em] text-white uppercase"><img src="./src/assets/img/final logo action text kanan.png" alt="ActiOn Logo" class="w-56 h-auto" /></div>
+          <br />
+          <div class="font-ui text-[.7rem] tracking-[.3em] text-muted uppercase -mt-1">
+            Bracket Competition System
+            <audio id="bg-music" loop>
+              <source src="./src/assets/audio/Presto Orchestral.mp3" type="audio/mpeg" />
+            </audio>
+            <button id="toggle-music">🔊</button>
+            <br />
           </div>
-          
-          <div class="p-5">
-            <div class="mb-4">
-              <label for="team-count" class="block font-ui text-[.75rem] font-semibold tracking-[.2em] uppercase text-muted mb-1.5">Jumlah Tim</label>
-              <select id="team-count" class="w-full bg-surface border border-border rounded-md text-white font-ui text-[.95rem] font-medium py-2.5 pl-3.5 pr-[38px] outline-none transition-all duration-200 focus:border-red focus:ring-[3px] focus:ring-red-glow appearance-none cursor-pointer bg-no-repeat bg-[right_14px_center]" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A0A0A0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E&quot;);">
-                <option value="4" class="bg-[#1e1e1e]">4 Tim</option>
-                <option value="8" selected class="bg-[#1e1e1e]">8 Tim</option>
-                <option value="16" class="bg-[#1e1e1e]">16 Tim</option>
-                <option value="other" class="bg-[#1e1e1e]">Lainnya…</option>
-              </select>
+        </div>
+        <div class="font-head text-xs font-bold tracking-[.15em] text-red border border-red-dim py-1 px-3 rounded-sm uppercase bg-red/5">⚡ Tournament Organizer</div>
+      </header>
+
+      <!-- BENTO GRID -->
+      <div class="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-4 items-start">
+        <!-- LEFT: SETUP PANEL -->
+        <div>
+          <div class="bg-card border border-border rounded-md overflow-hidden">
+            <div class="flex items-center gap-2.5 px-5 py-3.5 bg-surface border-b border-border">
+              <div class="w-[3px] h-[18px] bg-red rounded-sm shrink-0"></div>
+              <span class="font-head text-base font-bold tracking-[.12em] uppercase text-white">Setup Tournament</span>
             </div>
 
-            <div class="mb-4" id="custom-wrap" style="display:none">
-              <label for="custom-team-count" class="block font-ui text-[.75rem] font-semibold tracking-[.2em] uppercase text-muted mb-1.5">Jumlah Custom (2–16)</label>
-              <input type="number" id="custom-team-count" min="2" max="16" placeholder="Masukkan jumlah tim" class="w-full bg-surface border border-border rounded-md text-white font-ui text-[.95rem] font-medium py-2.5 px-3.5 outline-none transition-all duration-200 focus:border-red focus:ring-[3px] focus:ring-red-glow appearance-none" />
+            <div class="p-5">
+              <div class="mb-4">
+                <label for="team-count" class="block font-ui text-[.75rem] font-semibold tracking-[.2em] uppercase text-muted mb-1.5">Jumlah Tim</label>
+                <select
+                  id="team-count"
+                  class="w-full bg-surface border border-border rounded-md text-white font-ui text-[.95rem] font-medium py-2.5 pl-3.5 pr-[38px] outline-none transition-all duration-200 focus:border-red focus:ring-[3px] focus:ring-red-glow appearance-none cursor-pointer bg-no-repeat bg-[right_14px_center]"
+                >
+                  <option value="4" class="bg-[#1e1e1e]">4 Tim</option>
+                  <option value="8" selected class="bg-[#1e1e1e]">8 Tim</option>
+                  <option value="16" class="bg-[#1e1e1e]">16 Tim</option>
+                  <option value="other" class="bg-[#1e1e1e]">Lainnya…</option>
+                </select>
+              </div>
+
+              <div class="mb-4 hidden" id="custom-wrap">
+                <label for="custom-team-count" class="block font-ui text-[.75rem] font-semibold tracking-[.2em] uppercase text-muted mb-1.5">Jumlah Custom (2–16)</label>
+                <input
+                  type="number"
+                  id="custom-team-count"
+                  min="2"
+                  max="16"
+                  placeholder="Masukkan jumlah tim"
+                  class="w-full bg-surface border border-border rounded-md text-white font-ui text-[.95rem] font-medium py-2.5 px-3.5 outline-none transition-all duration-200 focus:border-red focus:ring-[3px] focus:ring-red-glow appearance-none"
+                />
+              </div>
+
+              <div class="mb-4">
+                <label for="bracket-mode" class="block font-ui text-[.75rem] font-semibold tracking-[.2em] uppercase text-muted mb-1.5">Mode Bracket</label>
+                <select
+                  id="bracket-mode"
+                  class="w-full bg-surface border border-border rounded-md text-white font-ui text-[.95rem] font-medium py-2.5 pl-3.5 pr-[38px] outline-none transition-all duration-200 focus:border-red focus:ring-[3px] focus:ring-red-glow appearance-none cursor-pointer bg-no-repeat bg-[right_14px_center] bg-[url('data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2212%22%20height=%227%22%20fill=%22none%22%3E%3Cpath%20d=%271%201l5%205%205-5%27%20stroke=%22%23A0A0A0%22%20stroke-width=%271.5%27%20stroke-linecap=%22round%22/%3E%3C/svg%3E')]"
+                >
+                  <option value="single" selected class="bg-[#1e1e1e]">Single Elimination</option>
+                  <option value="double" class="bg-[#1e1e1e]">Double Elimination</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label class="block font-ui text-[.75rem] font-semibold tracking-[.2em] uppercase text-muted mb-1.5">Nama Tim / Peserta</label>
+                <div id="team-inputs" class="grid grid-cols-2 gap-2 mt-1"></div>
+              </div>
+
+              <p id="status-message" class="font-ui text-[.85rem] text-red min-h-[20px] mt-2 mb-0"></p>
+
+              <button
+                id="btn-generate"
+                class="group relative w-full mt-2 inline-flex items-center justify-center gap-2 font-head text-base font-bold tracking-[.12em] uppercase border-none rounded-md cursor-pointer transition-all duration-200 py-3 px-6 bg-gradient-to-br from-red to-[#b5222d] text-white overflow-hidden active:scale-95"
+              >
+                <div class="absolute inset-0 bg-gradient-to-br from-[#ff4a56] to-red opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                <svg class="w-[18px] h-[18px] shrink-0 relative z-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span class="relative z-10">Generate Bracket</span>
+              </button>
+
+              <button
+                id="btn-export"
+                type="button"
+                class="hidden w-full mt-3 inline-flex items-center justify-center gap-2 font-head text-base font-bold tracking-[.12em] uppercase border-none rounded-md cursor-pointer transition-all duration-200 py-3 px-6 bg-surface border border-red-dim text-red hover:bg-red/10 hover:border-red"
+              >
+                <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                </svg>
+                <span>Export Gambar</span>
+              </button>
             </div>
+          </div>
 
-            <div class="mb-4">
-              <label for="bracket-mode" class="block font-ui text-[.75rem] font-semibold tracking-[.2em] uppercase text-muted mb-1.5">Mode Bracket</label>
-              <select id="bracket-mode" class="w-full bg-surface border border-border rounded-md text-white font-ui text-[.95rem] font-medium py-2.5 pl-3.5 pr-[38px] outline-none transition-all duration-200 focus:border-red focus:ring-[3px] focus:ring-red-glow appearance-none cursor-pointer bg-no-repeat bg-[right_14px_center]" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A0A0A0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E&quot;);">
-                <option value="single" selected class="bg-[#1e1e1e]">Single Elimination</option>
-                <option value="double" class="bg-[#1e1e1e]">Double Elimination</option>
-              </select>
+          <!-- Stats mini-panel -->
+          <div class="bg-card border border-border rounded-md overflow-hidden mt-4 hidden" id="stats-panel">
+            <div class="flex items-center gap-2.5 px-5 py-3.5 bg-surface border-b border-border">
+              <div class="w-[3px] h-[18px] bg-red rounded-sm shrink-0"></div>
+              <span class="font-head text-base font-bold tracking-[.12em] uppercase text-white">Info Turnamen</span>
             </div>
-
-            <div class="mb-4">
-              <label class="block font-ui text-[.75rem] font-semibold tracking-[.2em] uppercase text-muted mb-1.5">Nama Tim / Peserta</label>
-              <div id="team-inputs" class="grid grid-cols-2 gap-2 mt-1"></div>
-            </div>
-
-            <p id="status-message" class="font-ui text-[.85rem] text-red min-h-[20px] mt-2 mb-0"></p>
-
-            <button id="btn-generate" class="group relative w-full mt-2 inline-flex items-center justify-center gap-2 font-head text-base font-bold tracking-[.12em] uppercase border-none rounded-md cursor-pointer transition-all duration-200 py-3 px-6 bg-gradient-to-br from-red to-[#b5222d] text-white overflow-hidden active:scale-95">
-              <div class="absolute inset-0 bg-gradient-to-br from-[#ff4a56] to-red opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-              <svg class="w-[18px] h-[18px] shrink-0 relative z-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-              </svg>
-              <span class="relative z-10">Generate Bracket</span>
-            </button>
-
-            <button id="btn-export" style="display:none;" class="w-full mt-3 inline-flex items-center justify-center gap-2 font-head text-base font-bold tracking-[.12em] uppercase border-none rounded-md cursor-pointer transition-all duration-200 py-3 px-6 bg-surface border border-red-dim text-red hover:bg-red/10 hover:border-red">
-              <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-              </svg>
-              <span>Export Gambar</span>
-            </button>
-
+            <div class="p-5 grid grid-cols-2 gap-3" id="stats-body"></div>
           </div>
         </div>
 
-        <!-- Stats mini-panel -->
-        <div class="bg-card border border-border rounded-md overflow-hidden mt-4" id="stats-panel" style="display:none;">
+        <!-- RIGHT: BRACKET PANEL -->
+        <div id="bracket-panel" class="bg-card border border-border rounded-md overflow-hidden sticky top-5">
           <div class="flex items-center gap-2.5 px-5 py-3.5 bg-surface border-b border-border">
             <div class="w-[3px] h-[18px] bg-red rounded-sm shrink-0"></div>
-            <span class="font-head text-base font-bold tracking-[.12em] uppercase text-white">Info Turnamen</span>
+            <span class="font-head text-base font-bold tracking-[.12em] uppercase text-white">Bracket</span>
+            <span id="bracket-mode-badge" class="ml-auto font-head text-[.7rem] font-bold tracking-[.15em] uppercase text-muted"></span>
           </div>
-          <div class="p-5 grid grid-cols-2 gap-3" id="stats-body"></div>
+          <div id="bracket-container" class="p-5 overflow-x-auto">
+            <div class="flex flex-col items-center justify-center gap-3 py-16 px-5 text-border text-center">
+              <svg class="opacity-30" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="7" height="4" rx="1" />
+                <rect x="3" y="10" width="7" height="4" rx="1" />
+                <rect x="14" y="6" width="7" height="4" rx="1" />
+                <rect x="14" y="14" width="7" height="4" rx="1" />
+                <line x1="10" y1="5" x2="12" y2="5" />
+                <line x1="10" y1="12" x2="12" y2="12" />
+                <line x1="12" y1="5" x2="12" y2="16" />
+                <line x1="12" y1="8" x2="14" y2="8" />
+                <line x1="12" y1="16" x2="14" y2="16" />
+              </svg>
+              <p class="font-head text-[1.1rem] tracking-[.1em] uppercase">Bracket akan muncul di sini</p>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- RIGHT: BRACKET PANEL -->
-      <div id="bracket-panel" class="bg-card border border-border rounded-md overflow-hidden sticky top-5">
-        <div class="flex items-center gap-2.5 px-5 py-3.5 bg-surface border-b border-border">
+    <!-- SCORE INPUT MODAL -->
+    <div class="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-all duration-200" id="modal-backdrop">
+      <div class="bg-card border border-border rounded-lg w-[min(420px,90vw)] translate-y-5 scale-95 transition-all duration-300 overflow-hidden" id="modal-box">
+        <div class="flex items-center gap-2.5 px-5 py-4 bg-surface border-b border-border">
           <div class="w-[3px] h-[18px] bg-red rounded-sm shrink-0"></div>
-          <span class="font-head text-base font-bold tracking-[.12em] uppercase text-white">Bracket</span>
-          <span id="bracket-mode-badge" class="ml-auto font-head text-[.7rem] font-bold tracking-[.15em] uppercase text-muted"></span>
+          <span class="font-head text-[1.1rem] font-bold tracking-[.1em] uppercase flex-1" id="modal-title">Input Skor</span>
         </div>
-        <div id="bracket-container" class="p-5 overflow-x-auto">
-          <div class="flex flex-col items-center justify-center gap-3 py-16 px-5 text-border text-center">
-            <svg class="opacity-30" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="3" width="7" height="4" rx="1"/><rect x="3" y="10" width="7" height="4" rx="1"/>
-              <rect x="14" y="6" width="7" height="4" rx="1"/><rect x="14" y="14" width="7" height="4" rx="1"/>
-              <line x1="10" y1="5" x2="12" y2="5"/><line x1="10" y1="12" x2="12" y2="12"/>
-              <line x1="12" y1="5" x2="12" y2="16"/><line x1="12" y1="8" x2="14" y2="8"/>
-              <line x1="12" y1="16" x2="14" y2="16"/>
-            </svg>
-            <p class="font-head text-[1.1rem] tracking-[.1em] uppercase">Bracket akan muncul di sini</p>
+        <div class="p-5">
+          <div class="flex items-center gap-2.5 mb-5">
+            <div class="flex-1 font-head text-[1.15rem] font-bold tracking-[.06em] text-left" id="modal-left-name">Team A</div>
+            <div class="font-head text-[.8rem] font-black text-muted tracking-[.15em] px-2 py-0.5 border border-border rounded-sm">VS</div>
+            <div class="flex-1 font-head text-[1.15rem] font-bold tracking-[.06em] text-right" id="modal-right-name">Team B</div>
+          </div>
+          <div class="flex gap-2.5 items-center mb-3">
+            <label id="modal-left-label" class="m-0 whitespace-nowrap shrink-0 text-[.7rem] font-ui font-semibold uppercase tracking-[.2em] text-muted">–</label>
+            <input
+              type="number"
+              id="modal-score-left"
+              min="0"
+              placeholder="0"
+              class="w-full bg-surface border border-border rounded-md text-white font-ui text-[1.2rem] font-bold py-2.5 px-3.5 outline-none transition-all duration-200 focus:border-red focus:ring-[3px] focus:ring-red-glow appearance-none text-center"
+            />
+          </div>
+          <div class="flex gap-2.5 items-center mb-3">
+            <label id="modal-right-label" class="m-0 whitespace-nowrap shrink-0 text-[.7rem] font-ui font-semibold uppercase tracking-[.2em] text-muted">–</label>
+            <input
+              type="number"
+              id="modal-score-right"
+              min="0"
+              placeholder="0"
+              class="w-full bg-surface border border-border rounded-md text-white font-ui text-[1.2rem] font-bold py-2.5 px-3.5 outline-none transition-all duration-200 focus:border-red focus:ring-[3px] focus:ring-red-glow appearance-none text-center"
+            />
           </div>
         </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- SCORE INPUT MODAL -->
-  <div class="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-all duration-200" id="modal-backdrop">
-    <div class="bg-card border border-border rounded-lg w-[min(420px,90vw)] translate-y-5 scale-95 transition-all duration-300 overflow-hidden" id="modal-box">
-      <div class="flex items-center gap-2.5 px-5 py-4 bg-surface border-b border-border">
-        <div class="w-[3px] h-[18px] bg-red rounded-sm shrink-0"></div>
-        <span class="font-head text-[1.1rem] font-bold tracking-[.1em] uppercase flex-1" id="modal-title">Input Skor</span>
-      </div>
-      <div class="p-5">
-        <div class="flex items-center gap-2.5 mb-5">
-          <div class="flex-1 font-head text-[1.15rem] font-bold tracking-[.06em] text-left" id="modal-left-name">Team A</div>
-          <div class="font-head text-[.8rem] font-black text-muted tracking-[.15em] px-2 py-0.5 border border-border rounded-sm">VS</div>
-          <div class="flex-1 font-head text-[1.15rem] font-bold tracking-[.06em] text-right" id="modal-right-name">Team B</div>
+        <div class="flex gap-2.5 px-5 py-4 bg-surface border-t border-border">
+          <button
+            class="flex-1 inline-flex items-center justify-center font-head text-base font-bold tracking-[.12em] uppercase border-none rounded-md cursor-pointer transition-all duration-200 py-2.5 px-6 bg-surface border border-border text-muted hover:border-red-dim hover:text-white"
+            id="modal-cancel"
+          >
+            Batal
+          </button>
+          <button
+            class="group relative flex-1 inline-flex items-center justify-center font-head text-base font-bold tracking-[.12em] uppercase border-none rounded-md cursor-pointer transition-all duration-200 py-2.5 px-6 bg-gradient-to-br from-red to-[#b5222d] text-white overflow-hidden active:scale-95"
+            id="modal-confirm"
+          >
+            <div class="absolute inset-0 bg-gradient-to-br from-[#ff4a56] to-red opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            <span class="relative z-10">Tentukan Pemenang</span>
+          </button>
         </div>
-        <div class="flex gap-2.5 items-center mb-3">
-          <label id="modal-left-label" class="m-0 whitespace-nowrap shrink-0 text-[.7rem] font-ui font-semibold uppercase tracking-[.2em] text-muted">–</label>
-          <input type="number" id="modal-score-left" min="0" placeholder="0" class="w-full bg-surface border border-border rounded-md text-white font-ui text-[1.2rem] font-bold py-2.5 px-3.5 outline-none transition-all duration-200 focus:border-red focus:ring-[3px] focus:ring-red-glow appearance-none text-center" />
-        </div>
-        <div class="flex gap-2.5 items-center mb-3">
-          <label id="modal-right-label" class="m-0 whitespace-nowrap shrink-0 text-[.7rem] font-ui font-semibold uppercase tracking-[.2em] text-muted">–</label>
-          <input type="number" id="modal-score-right" min="0" placeholder="0" class="w-full bg-surface border border-border rounded-md text-white font-ui text-[1.2rem] font-bold py-2.5 px-3.5 outline-none transition-all duration-200 focus:border-red focus:ring-[3px] focus:ring-red-glow appearance-none text-center" />
-        </div>
-      </div>
-      <div class="flex gap-2.5 px-5 py-4 bg-surface border-t border-border">
-        <button class="flex-1 inline-flex items-center justify-center font-head text-base font-bold tracking-[.12em] uppercase border-none rounded-md cursor-pointer transition-all duration-200 py-2.5 px-6 bg-surface border border-border text-muted hover:border-red-dim hover:text-white" id="modal-cancel">Batal</button>
-        <button class="group relative flex-1 inline-flex items-center justify-center font-head text-base font-bold tracking-[.12em] uppercase border-none rounded-md cursor-pointer transition-all duration-200 py-2.5 px-6 bg-gradient-to-br from-red to-[#b5222d] text-white overflow-hidden active:scale-95" id="modal-confirm">
-          <div class="absolute inset-0 bg-gradient-to-br from-[#ff4a56] to-red opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-          <span class="relative z-10">Tentukan Pemenang</span>
-        </button>
       </div>
     </div>
-  </div>
 
-  <!-- TOAST -->
-  <div id="toast" class="fixed bottom-[30px] left-1/2 -translate-x-1/2 translate-y-5 z-[200] bg-surface border border-border border-l-[3px] rounded-md py-3 px-5 font-ui text-[.9rem] font-semibold text-white pointer-events-none transition-all duration-300 whitespace-nowrap opacity-0 border-l-red"></div>
+    <!-- TOAST -->
+    <div
+      id="toast"
+      class="fixed bottom-[30px] left-1/2 -translate-x-1/2 translate-y-5 z-[200] bg-surface border border-border border-l-[3px] rounded-md py-3 px-5 font-ui text-[.9rem] font-semibold text-white pointer-events-none transition-all duration-300 whitespace-nowrap opacity-0 border-l-red"
+    ></div>
 
-<script src="./script/app.js"></script>
-</body>
+    <script src="./script/app.js"></script>
+    <div id="floating-orb">
+      <div class="orb-wrapper">
+        <img src="./src/assets/img/Action Logo Icon.png" class="orb-logo" alt="ActiOn Logo" />
+
+        <div class="orb-base"></div>
+      </div>
+      <div class="orb-particles">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+    <div class="fire-particles">
+      <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span
+      ><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span
+      ><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span
+      ><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span
+      ><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span
+      ><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span
+      ><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span
+      ><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span
+      ><span></span><span></span> <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span
+      ><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span
+      ><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span
+      ><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span
+      ><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span
+      ><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span
+      ><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span
+      ><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span
+      ><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span
+      ><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span
+      ><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span
+      ><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span
+      ><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span
+      ><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span
+      ><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span
+      ><span></span><span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span
+      ><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span
+      ><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span> <span></span><span></span
+      ><span></span><span></span><span></span> <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </body>
 </html>

@@ -522,3 +522,49 @@ tombolExport.addEventListener('click', () => {
 });
 
 buatInputTim(parseInt(pilihanJumlahTim.value, 10));
+
+
+/* soundtrack */
+const music = document.getElementById("bg-music");
+const btn = document.getElementById("toggle-music");
+
+let isPlaying = false;
+let initialized = false;
+
+function startMusic() {
+  if (initialized) return;
+
+  music.volume = 0.3;
+  music.loop = true;
+
+  music.play().then(() => {
+    isPlaying = true;
+    btn.innerText = "🔊";
+  }).catch((err) => {
+    console.log("Autoplay ditolak browser:", err);
+  });
+
+  initialized = true;
+
+  window.removeEventListener("click", startMusic);
+  window.removeEventListener("pointerdown", startMusic);
+  window.removeEventListener("keydown", startMusic);
+  window.removeEventListener("touchstart", startMusic);
+}
+
+// multi trigger 
+window.addEventListener("click", startMusic, { once: true });
+window.addEventListener("pointerdown", startMusic, { once: true });
+window.addEventListener("touchstart", startMusic, { once: true });
+window.addEventListener("keydown", startMusic, { once: true });
+
+btn.addEventListener("click", async () => {
+  if (!isPlaying) {
+    await music.play();
+    btn.innerText = "🔊";
+  } else {
+    music.pause();
+    btn.innerText = "🔇";
+  }
+  isPlaying = !isPlaying;
+});
